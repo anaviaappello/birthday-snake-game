@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Arpita 🎂</title>
+  <style>
+    body {
+      background-color: #fff0f5;
+      font-family: 'Comic Sans MS', cursive;
+      text-align: center;
+      color: #8b008b;
+      padding: 20px;
+    }
+    canvas {
+      background: #ffe4f3;
+      display: block;
+      margin: 20px auto;
+      border: 3px solid #e9c6e9;
+      border-radius: 10px;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+    #startMessage {
+      font-size: 1.3em;
+      margin: 15px 0;
+      color: #d147a3;
+    }
+  </style>
+</head>
+<body>
+  <h1>"Birthdays without presents are not the same..."<br>So here's mine 🎁<br><br><em>HAPPY BIRTHDAY LOVE 💘</em></h1>
+  <div id="startMessage">Guide your little snake to cupcakes and unlock surprises! 🎂🎈</div>
+
+  <canvas id="gameCanvas" width="300" height="300"></canvas>
+  <div id="message"></div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const box = 30;
+    let snake = [{ x: 5 * box, y: 5 * box }];
+    let direction = 'RIGHT';
+    let foodIndex = 0;
+    const gifts = ['🧁', '🧁', '🧁', '🧁'];
+    let food = generateFood();
+
+    document.addEventListener('keydown', setDirection);
+
+    function generateFood() {
+      return {
+        x: Math.floor(Math.random() * 10) * box,
+        y: Math.floor(Math.random() * 10) * box
+      };
+    }
+
+    function setDirection(e) {
+      if (e.keyCode === 37 && direction !== 'RIGHT') direction = 'LEFT';
+      else if (e.keyCode === 38 && direction !== 'DOWN') direction = 'UP';
+      else if (e.keyCode === 39 && direction !== 'LEFT') direction = 'RIGHT';
+      else if (e.keyCode === 40 && direction !== 'UP') direction = 'DOWN';
+    }
+
+    function draw() {
+      ctx.fillStyle = '#ffe4f3';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = i === 0 ? '#ff69b4' : '#ffc0cb';
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+      }
+
+      ctx.font = '20px Comic Sans MS';
+      ctx.fillText(gifts[foodIndex], food.x + 5, food.y + 25);
+
+      let snakeX = snake[0].x;
+      let snakeY = snake[0].y;
+
+      if (direction === 'LEFT') snakeX -= box;
+      if (direction === 'UP') snakeY -= box;
+      if (direction === 'RIGHT') snakeX += box;
+      if (direction === 'DOWN') snakeY += box;
+
+      if (snakeX === food.x && snakeY === food.y) {
+        showMessage(foodIndex);
+        foodIndex++;
+        if (foodIndex >= gifts.length) {
+          showFinalMessage();
+          clearInterval(game);
+        } else {
+          food = generateFood();
+        }
+      } else {
+        snake.pop();
+      }
+
+      let newHead = { x: snakeX, y: snakeY };
+
+      if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)) {
+        clearInterval(game);
+        alert('Game Over 😢');
+      }
+
+      snake.unshift(newHead);
+    }
+
+    function collision(head, array) {
+      for (let i = 0; i < array.length; i++) {
+        if (head.x === array[i].x && head.y === array[i].y) return true;
+      }
+      return false;
+    }
+
+    function showMessage(index) {
+      const messageDiv = document.getElementById('message');
+      const messages = [
+        `🎵 This is our song! <br><a href='https://open.spotify.com/track/0TEekvXTomKt3hdXDZxxeW?si=GQipa0MOT3aS9T58cKlOKw' target='_blank'>Click to listen 🎶</a>`,
+        `🌸 Your Pinterest board! <br><a href='https://shffls.com/shuffles/5434919260893804111/?sender_id=661184926452010417' target='_blank'>See your surprise 💕</a>`,
+        `🎨 A handmade sketch just for you! <br><img src="sketch.jpg" width="200" style="border-radius: 10px; box-shadow: 2px 2px 12px #ccc;">`,
+        `🎁 Your final gift! <br><a href='https://www.reneecosmetics.in/collections/gpay-offer-additional-25-off/?utm_source=alliance&utm_medium=gpay&utm_campaign=may25off&utm_content=may25off' target='_blank'>GPay Offer 🎉</a><br>Code: <strong>GPAYGUG04U3UGMY</strong>`
+      ];
+      messageDiv.innerHTML = messages[index] + '<br><br>🎊 Confetti time! 🎊';
+    }
+
+    function showFinalMessage() {
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML += `<br><br><span style='font-size:2em;'>🎉🎂🎈 You got all the surprises! 🎈🎂🎉</span>`;
+    }
+
+    let game = setInterval(draw, 200);
+  </script>
+</body>
+</html>
